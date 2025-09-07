@@ -7,10 +7,31 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// In production behind a proxy (Render), trust the proxy so secure cookies work
+if (NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 // Middleware
+const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || '';
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  ...allowedOriginsEnv
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean)
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000', // React app URL
+  origin: function(origin, callback) {
+    // Allow REST tools or same-origin/no-origin requests
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS not allowed for origin: ' + origin), false);
+  },
   credentials: true
 }));
 app.use(bodyParser.json());
@@ -19,12 +40,13 @@ app.use(cookieParser());
 
 // Session configuration
 app.use(session({
-  secret: 'your-secret-key-change-in-production',
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

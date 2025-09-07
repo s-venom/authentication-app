@@ -5,8 +5,12 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 
-// Configure axios to include credentials
+// Configure axios defaults
 axios.defaults.withCredentials = true;
+const apiBase = process.env.REACT_APP_API_BASE || '';
+if (apiBase) {
+  axios.defaults.baseURL = apiBase;
+}
 
 function App() {
   const [user, setUser] = useState(null);
