@@ -15,7 +15,7 @@ if (NODE_ENV === 'production') {
 }
 
 // Middleware
-const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || '';
+const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || 'https://authentication-app-lyart.vercel.app/';
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',

@@ -7,7 +7,7 @@ import Dashboard from './components/Dashboard';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
-const apiBase = process.env.REACT_APP_API_BASE || '';
+const apiBase = process.env.REACT_APP_API_BASE || 'https://auth-backend-3uos.onrender.com';
 if (apiBase) {
   axios.defaults.baseURL = apiBase;
 }
